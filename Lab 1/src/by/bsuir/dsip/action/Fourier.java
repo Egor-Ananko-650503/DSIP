@@ -13,10 +13,8 @@ public class Fourier {
 
     public static Complex[] ifft(Complex[] x) {
         int n = x.length;
-        Complex[] y = new Complex[n];
 
-        y = fftImpl(x, true);
-
+        Complex[] y = fftImpl(x, true);
         for (int i = 0; i < n; ++i) {
             y[i] = y[i].scale(1.0 / n);
         }
@@ -47,15 +45,62 @@ public class Fourier {
         }
         Complex[] oddCalc = fftImpl(odd, opposite);
 
-        Complex wn = new Complex(Math.cos(2 * Math.PI / n), Math.sin(2 * Math.PI / n));
-        if (opposite) wn = wn.conjugate();
+        double angle = 2 * Math.PI / n;
+        Complex wn = new Complex(Math.cos(angle), Math.sin(angle));
         Complex w = new Complex(1.0, 0.0);
+
+        if (opposite) wn = wn.conjugate();
         Complex[] y = new Complex[n];
         for (int k = 0; k < n / 2; ++k) {
             y[k] = evenCalc[k].plus(w.times(oddCalc[k]));
             y[k + n / 2] = evenCalc[k].minus(w.times(oddCalc[k]));
             w = w.times(wn);
         }
+
+        return y;
+    }
+
+    public static Complex[] dft(Complex[] x) {
+        return dftImpl(x, false);
+    }
+
+    public static Complex[] idft(Complex[] x) {
+        int n = x.length;
+
+        Complex[] y = dftImpl(x, true);
+        for (int i = 0; i < n; i++) {
+            y[i] = y[i].scale(1.0 / n);
+        }
+
+        return y;
+    }
+
+    private static Complex[] dftImpl(Complex[] x, boolean opposite) {
+        int n = x.length;
+
+        if (n == 1) {
+            return new Complex[]{x[0]};
+        }
+
+        if (n % 2 != 0) {
+            throw new IllegalArgumentException("n is not a power of 2");
+        }
+
+        Complex[] y = new Complex[n];
+        for (int i = 0; i < n; ++i) {
+            y[i] = new Complex(0.0, 0.0);
+
+            double angle = 2 * Math.PI * i / n;
+            Complex wi = new Complex(Math.cos(angle), -1.0 * Math.sin(angle));
+            Complex wj = new Complex(1.0, 0);
+
+            if (opposite) wi = wi.conjugate();
+            for (int j = 0; j < n; ++j) {
+                y[i] = y[i].plus(x[j].times(wj));
+                wj = wj.times(wi);
+            }
+        }
+
         return y;
     }
 }
