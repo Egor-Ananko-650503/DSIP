@@ -103,4 +103,20 @@ public class Fourier {
 
         return y;
     }
+
+    public static Complex[] dft2(Complex[] in){
+        int n = in.length;
+        Complex[] out = new Complex[n];
+        for (int i = 0; i<n; i++){
+            double sumreal = 0;
+            double sumimag = 0;
+            for(int j = 0; j<n; j++){
+                double angle = 2 * Math.PI * j * i / n;
+                sumreal+= in[j].re()* Math.cos(angle) + in[j].im() * Math.sin(angle);
+                sumimag+= -in[j].re()* Math.sin(angle) + in[j].im() * Math.cos(angle);
+            }
+            out[i] = new Complex(sumreal, sumimag);
+        }
+        return out;
+    }
 }
