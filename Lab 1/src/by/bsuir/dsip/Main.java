@@ -3,39 +3,75 @@ package by.bsuir.dsip;
 import by.bsuir.dsip.action.Fourier;
 import by.bsuir.dsip.bean.Complex;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+//y = cos(3x) + sin(2x) N = 8
 public class Main {
     public static void main(String[] args) {
-        int n = (int)Math.pow(2, 7);
-        Complex[] x = new Complex[n];
+        final int N = 32;
+        final double T = 1;
+        final double fd = N / (2 * T);
+        Complex[] x = new Complex[N];
 
-        x[0] = new Complex(-0.03480425839330703, 0);
-        x[1] = new Complex(0.07910192950176387, 0);
-        x[2] = new Complex(0.7233322451735928, 0);
-        x[3] = new Complex(0.1659819820667019, 0);
-
-        for (int i = 4; i < n; i += 4) {
-            x[i] = new Complex(x[0]);
-            x[i + 1] = new Complex(x[1]);
-            x[i + 2] = new Complex(x[2]);
-            x[i + 3] = new Complex(x[3]);
+        try {
+            FileWriter fileWriter = new FileWriter("source.txt");
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            for (int i = 0; i < 128; i++) {
+                printWriter.printf("%s, %s\n", i, Math.cos(3 * i * 0.125) + Math.sin(2 * i * 0.125));
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-//        show(x, "x");
 
-        Complex[] y = Fourier.fft(x);
-        show(y, "y = fft(x)");
+        try {
+            FileWriter fileWriter = new FileWriter("before.txt");
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            for (int i = 0; i < N; i++) {
+                x[i] = new Complex(Math.cos(3 * i) + Math.sin(2 * i), 0.0);
+                printWriter.printf("%s\n", x[i].re());
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Complex[] z = Fourier.ifft(y);
-//        show(z, "z = ifft(y)");
+        Complex[] dx = Fourier.fft(x);
+//        Complex[] rdx = dx;
+        Complex[] rdx = new Complex[dx.length];
+        for (int i = 0; i < dx.length / 2; i++) {
+            rdx[dx.length / 2 - 1 - i] = dx[i];
+            rdx[dx.length - 1 - i] = dx[dx.length / 2 + i];
+        }
+        try {
+            FileWriter fileWriter = new FileWriter("ampl.txt");
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            FileWriter fileWriterP = new FileWriter("phase.txt");
+            PrintWriter printWriterP = new PrintWriter(fileWriterP);
+            for (int i = 0; i < rdx.length; i++) {
+                printWriter.printf("%s, %s\n", fd * ((double) i / N), rdx[i].abs());
+                printWriterP.printf("%s, %s\n", fd * ((double) i / N), rdx[i].phase());
+            }
+            printWriter.close();
+            printWriterP.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Complex[] idx = Fourier.ifft(dx);
+        try {
+            FileWriter fileWriter = new FileWriter("after.txt");
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            for (int i = 0; i < idx.length; i++) {
+                printWriter.printf("%s, %s\n", i, idx[i].re());
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Done!");
-    }
-
-    private static void show(Complex[] x, String title) {
-        System.out.println(title);
-        System.out.println("-------------------");
-        for (Complex elem : x) {
-            System.out.println(elem);
-        }
-        System.out.println();
     }
 }
