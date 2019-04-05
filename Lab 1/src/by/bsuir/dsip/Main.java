@@ -7,7 +7,7 @@ import by.bsuir.dsip.bean.Complex;
 //y = cos(3x) + sin(2x) N = 8
 public class Main {
     public static void main(String[] args) {
-        final int N = 16;
+        final int N = 32;
         final double T = 1;
         final double fd = N / (2 * T);
         Complex[] x = new Complex[N];
@@ -18,39 +18,45 @@ public class Main {
         for (int i = 0; i < source.length; i++) {
             source[i] = new Complex(Math.cos(3 * i * 0.125) + Math.sin(2 * i * 0.125), 0.0);
         }
-        fileAction.writeInRe(source, "source.txt");
+        fileAction.writeInRe(source, "reports/source.txt");
 
         for (int i = 0; i < N; i++) {
             x[i] = new Complex(Math.cos(3 * i) + Math.sin(2 * i), 0.0);
         }
-        fileAction.writeInRe(x, "before.txt");
+        fileAction.writeInRe(x, "reports/before.txt");
 
         // FFT
 
         Complex[] fx = Fourier.fft(x);
+        for (int i = 0; i < fx.length; i++) {
+            fx[i] = fx[i].scale(1.0 / fx.length);
+        }
 //        Complex[] rfx = fx;
         Complex[] rfx = halfRevers(fx);
-        fileAction.writeInAmpl(rfx, N, fd, "fft-ampl.txt");
-        fileAction.writeInPhase(rfx, N, fd, "fft-phase.txt");
+        fileAction.writeInAmpl(rfx, N, fd, "reports/fft-ampl.txt");
+        fileAction.writeInPhase(rfx, N, fd, "reports/fft-phase.txt");
 
         Complex[] ifx = Fourier.ifft(fx);
-        fileAction.writeInRe(ifx, "fft-after.txt");
+        fileAction.writeInRe(ifx, "reports/fft-after.txt");
 
         // DFT
 
         Complex[] dx = Fourier.dft2(x);
+        for (int i = 0; i < dx.length; i++) {
+            dx[i] = dx[i].scale(1.0 / dx.length);
+        }
 //        Complex[] rdx = dx;
         Complex[] rdx = halfRevers(dx);
-        fileAction.writeInAmpl(rdx, N, fd, "dft-ampl.txt");
-        fileAction.writeInPhase(rdx, N, fd, "dft-phase.txt");
+        fileAction.writeInAmpl(rdx, N, fd, "reports/dft-ampl.txt");
+        fileAction.writeInPhase(rdx, N, fd, "reports/dft-phase.txt");
 
-        Complex[] idx = Fourier.ifft(dx);
-        fileAction.writeInRe(idx, "dft-after.txt");
+        Complex[] idx = Fourier.idft2(dx);
+        fileAction.writeInRe(idx, "reports/dft-after.txt");
 
         System.out.println("Done!");
 
         if (args.length > 0) {
-            int tSize = (int)Math.pow(2.0, 14.0);
+            int tSize = (int) Math.pow(2.0, 14.0);
             Complex[] testSrc = new Complex[tSize];
             for (int i = 0; i < tSize; i++) {
                 var re = Math.random() * 10.0 - 5.0;
