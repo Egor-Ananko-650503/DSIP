@@ -22,7 +22,7 @@ public class Fourier {
         return y;
     }
 
-    private static Complex[] fftImpl(Complex[] x, boolean opposite) {
+    private static Complex[] fftImpl(Complex[] x, boolean invert) {
         int n = x.length;
 
         if (n == 1) {
@@ -37,19 +37,19 @@ public class Fourier {
         for (int k = 0; k < n / 2; ++k) {
             even[k] = x[2 * k];
         }
-        Complex[] evenCalc = fftImpl(even, opposite);
+        Complex[] evenCalc = fftImpl(even, invert);
 
         Complex[] odd = even;
         for (int k = 0; k < n / 2; ++k) {
             odd[k] = x[2 * k + 1];
         }
-        Complex[] oddCalc = fftImpl(odd, opposite);
+        Complex[] oddCalc = fftImpl(odd, invert);
 
         double angle = 2 * Math.PI / n;
         Complex wn = new Complex(Math.cos(angle), Math.sin(angle));
         Complex w = new Complex(1.0, 0.0);
 
-        if (opposite) wn = wn.conjugate();
+        if (invert) wn = wn.conjugate();
         Complex[] y = new Complex[n];
         for (int k = 0; k < n / 2; ++k) {
             y[k] = evenCalc[k].plus(w.times(oddCalc[k]));
@@ -75,7 +75,7 @@ public class Fourier {
         return y;
     }
 
-    private static Complex[] dftImpl(Complex[] x, boolean opposite) {
+    private static Complex[] dftImpl(Complex[] x, boolean invert) {
         int n = x.length;
 
         if (n == 1) {
@@ -91,10 +91,10 @@ public class Fourier {
             y[i] = new Complex(0.0, 0.0);
 
             double angle = 2 * Math.PI * i / n;
-            Complex wi = new Complex(Math.cos(angle), -1.0 * Math.sin(angle));
+            Complex wi = new Complex(Math.cos(angle), -Math.sin(angle));
             Complex wj = new Complex(1.0, 0);
 
-            if (opposite) wi = wi.conjugate();
+            if (invert) wi = wi.conjugate();
             for (int j = 0; j < n; ++j) {
                 y[i] = y[i].plus(x[j].times(wj));
                 wj = wj.times(wi);
@@ -129,7 +129,7 @@ public class Fourier {
             for (int j = 0; j < n; j++) {
                 double angle = 2 * Math.PI * j * i / n;
                 sumreal += in[j].re() * Math.cos(angle) - in[j].im() * Math.sin(angle);
-                sumimag += -in[j].re() * Math.sin(angle) - in[j].im() * Math.cos(angle);
+                sumimag += in[j].re() * Math.sin(angle) + in[j].im() * Math.cos(angle);
             }
             out[i] = new Complex(sumreal/n, sumimag/n);
         }

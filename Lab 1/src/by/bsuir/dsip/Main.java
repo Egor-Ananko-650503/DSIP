@@ -7,7 +7,7 @@ import by.bsuir.dsip.bean.Complex;
 //y = cos(3x) + sin(2x) N = 8
 public class Main {
     public static void main(String[] args) {
-        final int N = 32;
+        final int N = 16;
         final double T = 1;
         final double fd = N / (2 * T);
         Complex[] x = new Complex[N];
@@ -25,20 +25,67 @@ public class Main {
         }
         fileAction.writeInRe(x, "before.txt");
 
-        Complex[] dx = Fourier.fft(x);
-//        Complex[] rdx = dx;
+        // FFT
 
-        Complex[] rdx = new Complex[dx.length];
-        for (int i = 0; i < dx.length / 2; i++) {
-            rdx[dx.length / 2 - 1 - i] = dx[i];
-            rdx[dx.length - 1 - i] = dx[dx.length / 2 + i];
-        }
-        fileAction.writeInAmpl(rdx, N, fd, "ampl.txt");
-        fileAction.writeInPhase(rdx, N, fd, "phase.txt");
+        Complex[] fx = Fourier.fft(x);
+//        Complex[] rfx = fx;
+        Complex[] rfx = halfRevers(fx);
+        fileAction.writeInAmpl(rfx, N, fd, "fft-ampl.txt");
+        fileAction.writeInPhase(rfx, N, fd, "fft-phase.txt");
+
+        Complex[] ifx = Fourier.ifft(fx);
+        fileAction.writeInRe(ifx, "fft-after.txt");
+
+        // DFT
+
+        Complex[] dx = Fourier.dft2(x);
+//        Complex[] rdx = dx;
+        Complex[] rdx = halfRevers(dx);
+        fileAction.writeInAmpl(rdx, N, fd, "dft-ampl.txt");
+        fileAction.writeInPhase(rdx, N, fd, "dft-phase.txt");
 
         Complex[] idx = Fourier.ifft(dx);
-        fileAction.writeInRe(idx, "after.txt");
+        fileAction.writeInRe(idx, "dft-after.txt");
 
         System.out.println("Done!");
+
+        if (args.length > 0) {
+            int tSize = (int)Math.pow(2.0, 14.0);
+            Complex[] testSrc = new Complex[tSize];
+            for (int i = 0; i < tSize; i++) {
+                var re = Math.random() * 10.0 - 5.0;
+                var im = Math.random() * 10.0 - 5.0;
+                testSrc[i] = new Complex(re, im);
+            }
+            long dftStart = System.currentTimeMillis();
+            Complex[] testDft = Fourier.dft2(testSrc);
+            System.out.println("Dft time: " + (System.currentTimeMillis() - dftStart) + " ms");
+
+            long idftStart = System.currentTimeMillis();
+            Complex[] testIdft = Fourier.idft2(testDft);
+            System.out.println("Idft time: " + (System.currentTimeMillis() - idftStart) + " ms");
+
+            long fftStart = System.currentTimeMillis();
+            Complex[] testFft = Fourier.dft(testSrc);
+            System.out.println("Fft time: " + (System.currentTimeMillis() - fftStart) + " ms");
+
+            long ifftStart = System.currentTimeMillis();
+            Complex[] testIfft = Fourier.idft(testFft);
+            System.out.println("Ifft time: " + (System.currentTimeMillis() - ifftStart) + " ms");
+        }
+
+        /*for (int i = 0; i < tSize; i++) {
+            System.out.println(testSrc[i] + " || " + testIdft[i] + " || " + testIfft[i]);
+//            System.out.println(testDft[i] + " || " + testFft[i]);
+        }*/
+    }
+
+    public static Complex[] halfRevers(Complex[] in) {
+        Complex[] out = new Complex[in.length];
+        for (int i = 0; i < in.length / 2; i++) {
+            out[in.length / 2 - 1 - i] = in[i];
+            out[in.length - 1 - i] = in[in.length / 2 + i];
+        }
+        return out;
     }
 }
