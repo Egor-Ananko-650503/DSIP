@@ -45,7 +45,7 @@ public class Fourier {
         }
         Complex[] oddCalc = fftImpl(odd, invert);
 
-        double angle = 2 * Math.PI / n;
+        double angle = -2 * Math.PI / n;
         Complex wn = new Complex(Math.cos(angle), Math.sin(angle));
         Complex w = new Complex(1.0, 0.0);
 
