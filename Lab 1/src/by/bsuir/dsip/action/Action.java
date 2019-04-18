@@ -1,12 +1,14 @@
 package by.bsuir.dsip.action;
 
+import by.bsuir.dsip.bean.Complex;
+
 public class Action {
 
-    public double[] convolution(double[] x, double[] y){
+    public Complex[] convolution(Complex[] x, Complex[] y){
 
         int N = x.length;
         int M = y.length;
-        double[] z = new double[M + N - 1];
+        Complex[] z = new Complex[M + N - 1];
         for(int i = 0; i < N + M - 1; i++){
             int k = i;
             for(int j = 0; j <= i & j < M; j++, k--){
@@ -15,9 +17,9 @@ public class Action {
 
                     continue;
                 }
-                z[i] += y[j] * x[k];
+                z[i] = z[i].plus(y[j].times(x[k]));
             }
-            z[i] /= (M + N - 1);
+            z[i] = z[i].scale(1.0 / (M + N - 1));
         }
         return z;
     }
