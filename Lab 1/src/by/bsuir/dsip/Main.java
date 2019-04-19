@@ -1,13 +1,16 @@
 package by.bsuir.dsip;
 
+import by.bsuir.dsip.action.Action;
 import by.bsuir.dsip.action.FileAction;
 import by.bsuir.dsip.action.Fourier;
 import by.bsuir.dsip.bean.Complex;
 
+import java.util.Arrays;
+
 //y = cos(3x) + sin(2x) N = 8
 public class Main {
     public static void main(String[] args) {
-        final int N = 32;
+        /*final int N = 32;
         final double T = 1;
         final double fd = N / (2 * T);
         Complex[] x = new Complex[N];
@@ -80,10 +83,23 @@ public class Main {
             System.out.println("Ifft time: " + (System.currentTimeMillis() - ifftStart) + " ms");
         }
 
-        /*for (int i = 0; i < tSize; i++) {
+        *//*for (int i = 0; i < tSize; i++) {
             System.out.println(testSrc[i] + " || " + testIdft[i] + " || " + testIfft[i]);
 //            System.out.println(testDft[i] + " || " + testFft[i]);
         }*/
+
+        int N = 32;
+        Complex[] y = new Complex[N];
+        Complex[] z = new Complex[N];
+        FileAction fileAction = new FileAction();
+
+        for (int i = 0; i < N; i++) {
+            y[i] = new Complex(Math.cos(3 * i), 0.0);
+            z[i] = new Complex(Math.sin(2 * i), 0.0);
+        }
+
+        Complex[] resultCyclic = Action.convolutionCyclic(y, z);
+        Complex[] resultFFT = Action.convolutionCyclicFFT(y, z);
     }
 
     public static Complex[] halfRevers(Complex[] in) {
