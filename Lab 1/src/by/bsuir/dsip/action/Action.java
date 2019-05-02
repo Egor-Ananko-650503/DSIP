@@ -22,7 +22,7 @@ public class Action {
         return z;
     }
 
-    public static Complex[] convolutionCyclic(Complex x[], Complex y[]) {
+    public static Complex[] convolutionCyclic(Complex[] x, Complex[] y) {
         int N = x.length;
 
         if (N != y.length) {
@@ -33,7 +33,7 @@ public class Action {
             throw new IllegalArgumentException("data length is not a power of 2");
         }
 
-        Complex out[] = new Complex[N];
+        Complex[] out = new Complex[N];
         for (int n = 0; n < N; n++) {
             out[n] = new Complex(0.0, 0.0);
             for (int m = 0; m < N; m++) {
@@ -45,7 +45,7 @@ public class Action {
         return out;
     }
 
-    public static Complex[] convolutionCyclicFFT(Complex x[], Complex y[]) {
+    public static Complex[] convolutionCyclicFFT(Complex[] x, Complex[] y) {
         int N = x.length;
 
         if (N != y.length) {
@@ -61,6 +61,50 @@ public class Action {
         Complex[] xyMul = new Complex[N];
         for (int i = 0; i < N; i++) {
             xyMul[i] = xf[i].times(yf[i]);
+        }
+
+        return Fourier.ifft(xyMul);
+    }
+
+    public static Complex[] coefcorr(Complex[] x, Complex[] y) {
+        int N = x.length;
+
+        if (N != y.length) {
+            throw new IllegalArgumentException("x, y must have the same length");
+        }
+
+        if (N % 2 != 0) {
+            throw new IllegalArgumentException("data length is not a power of 2");
+        }
+
+        Complex[] out = new Complex[N];
+        for (int n = 0; n < N; n++) {
+            out[n] = new Complex(0.0, 0.0);
+            for (int m = 0; m < N; m++) {
+                int yIdx = (n + m > N - 1) ? m + n - N : n + m;
+                out[n] = out[n].plus(x[m].times(y[yIdx]));
+            }
+        }
+
+        return out;
+    }
+
+    public static Complex[] coefcorrFFT(Complex[] x, Complex[] y) {
+        int N = x.length;
+
+        if (N != y.length) {
+            throw new IllegalArgumentException("x, y must have the same length");
+        }
+
+        if (N % 2 != 0) {
+            throw new IllegalArgumentException("data length is not a power of 2");
+        }
+
+        Complex[] xf = Fourier.fft(x);
+        Complex[] yf = Fourier.fft(y);
+        Complex[] xyMul = new Complex[N];
+        for (int i = 0; i < N; i++) {
+            xyMul[i] = xf[i].conjugate().times(yf[i]);
         }
 
         return Fourier.ifft(xyMul);
