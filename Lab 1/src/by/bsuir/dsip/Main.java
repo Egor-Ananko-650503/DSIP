@@ -1,13 +1,12 @@
 package by.bsuir.dsip;
 
-import by.bsuir.dsip.action.Action;
-import by.bsuir.dsip.action.FileAction;
+import by.bsuir.dsip.action.Hadamard;
 import by.bsuir.dsip.bean.Complex;
 
 //y = cos(3x) + sin(2x) N = 8
 public class Main {
     public static void main(String[] args) {
-        int N = 32;
+        /*int N = 32;
         Complex[] y = new Complex[N];
         Complex[] z = new Complex[N];
         FileAction fileAction = new FileAction();
@@ -59,6 +58,16 @@ public class Main {
             System.out.println(convFft[0]);
             System.out.println(coefcorrClassic[0]);
             System.out.println(coefcorrFft[0]);
+        }*/
+
+        int n = 8;
+        int[][] hadamard = Hadamard.generate(n);
+        int[][] walsh = Hadamard.toWalsh(hadamard);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.printf("%3d", walsh[i][j]);
+            }
+            System.out.println();
         }
     }
 

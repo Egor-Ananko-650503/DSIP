@@ -2,7 +2,7 @@ package by.bsuir.dsip.action;
 
 public class Hadamard {
     public static int[][] generate(int dim) {
-        if(dim % 2 != 0) {
+        if (dim % 2 != 0) {
             throw new IllegalArgumentException("dim is not a power of 2");
         }
 
@@ -21,5 +21,26 @@ public class Hadamard {
         }
 
         return hadamard;
+    }
+
+    public static int[][] toWalsh(int[][] hadamard) {
+        int n = hadamard.length;
+
+        if (n % 2 != 0) {
+            throw new IllegalArgumentException("dim is not a power of 2");
+        }
+
+        int[][] walsh = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            int newIndex = 0;
+            for (int j = 1; j < n; j++) {
+                if (hadamard[i][j] != hadamard[i][j - 1]) newIndex++;
+            }
+            for (int j = 0; j < n; j++) {
+                walsh[newIndex][j] = hadamard[i][j];
+            }
+        }
+
+        return walsh;
     }
 }
