@@ -25,8 +25,9 @@ public class Hadamard {
 
     public static double[][] toWalsh(double[][] hadamard) {
         int n = hadamard.length;
+        int m = hadamard[0].length;
 
-        if (n % 2 != 0) {
+        if (n % 2 != 0 || m % 2 != 0) {
             throw new IllegalArgumentException("dim is not a power of 2");
         }
 

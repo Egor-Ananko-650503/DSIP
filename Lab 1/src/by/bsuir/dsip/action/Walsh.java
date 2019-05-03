@@ -8,10 +8,10 @@ public class Walsh {
 
         int N = x.length;
         Complex[] result = new Complex[N];
-        for(int i = 0; i < N; i++){
+        for (int i = 0; i < N; i++) {
             Complex value = new Complex(0, 0);
-            for(int j = 0; j < N; j++){
-                value.plus(x[j].times(new Complex(walsh[i][j], 0)));
+            for (int j = 0; j < N; j++) {
+                value = value.plus(x[j].times(new Complex(walsh[i][j], 0)));
             }
             result[i] = value;
         }
@@ -19,12 +19,12 @@ public class Walsh {
         return result;
     }
 
-    public Complex[] IDWT(double[][] walsh, Complex[] x){
+    public static Complex[] IDWT(double[][] walsh, Complex[] x) {
 
         Complex[] result = DWT(walsh, x);
         int N = result.length;
-        for(int i = 0; i < N; i++){
-            result[i].scale(1/N);
+        for (int i = 0; i < N; i++) {
+            result[i] = result[i].scale(1.0 / N);
         }
 
         return result;
