@@ -1,21 +1,21 @@
 package by.bsuir.dsip.action;
 
 public class Hadamard {
-    public static int[][] generate(int dim) {
+    public static double[][] generate(int dim) {
         if (dim % 2 != 0) {
             throw new IllegalArgumentException("dim is not a power of 2");
         }
 
-        int[][] hadamard = new int[dim][dim];
+        double[][] hadamard = new double[dim][dim];
 
         // initialize Hadamard matrix of order n
-        hadamard[0][0] = 1;
+        hadamard[0][0] = 1.0;
         for (int k = 1; k < dim; k += k) {
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < k; j++) {
                     hadamard[i + k][j] = hadamard[i][j];
                     hadamard[i][j + k] = hadamard[i][j];
-                    hadamard[i + k][j + k] = hadamard[i][j] == 1 ? -1 : 1;
+                    hadamard[i + k][j + k] = hadamard[i][j] == 1.0 ? -1.0 : 1.0;
                 }
             }
         }
@@ -23,22 +23,20 @@ public class Hadamard {
         return hadamard;
     }
 
-    public static int[][] toWalsh(int[][] hadamard) {
+    public static double[][] toWalsh(double[][] hadamard) {
         int n = hadamard.length;
 
         if (n % 2 != 0) {
             throw new IllegalArgumentException("dim is not a power of 2");
         }
 
-        int[][] walsh = new int[n][n];
-        for (int i = 0; i < n; i++) {
+        double[][] walsh = new double[n][n];
+        for (double[] line : hadamard) {
             int newIndex = 0;
             for (int j = 1; j < n; j++) {
-                if (hadamard[i][j] != hadamard[i][j - 1]) newIndex++;
+                if (line[j] != line[j - 1]) newIndex++;
             }
-            for (int j = 0; j < n; j++) {
-                walsh[newIndex][j] = hadamard[i][j];
-            }
+            System.arraycopy(line, 0, walsh[newIndex], 0, n);
         }
 
         return walsh;
