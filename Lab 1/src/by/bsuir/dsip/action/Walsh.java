@@ -1,18 +1,22 @@
 package by.bsuir.dsip.action;
 
+import by.bsuir.dsip.bean.Complex;
+
 public class Walsh {
 
-    public double[] DWT(double[][] walsh, double[] x){
+    public Complex[] DWT(double[][] walsh, Complex[] x){
 
-        int N = walsh.length;
-        double[] result = new double[N];
+        int N = x.length;
+        Complex[] result = new Complex[N];
         for(int i = 0; i < N; i++){
-            int value = 0;
+            Complex value = new Complex(0, 0);
             for(int j = 0; j < N; j++){
-                value += walsh[i][j] * x[j];
+                value.plus(x[j].times(new Complex(walsh[i][j], 0));
             }
-            result[i] = value;
+            result[i] = new Complex(value.re(), value.im());
         }
+
         return result;
     }
+
 }

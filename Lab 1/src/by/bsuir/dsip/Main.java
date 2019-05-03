@@ -61,4 +61,5 @@ public class Main {
             System.out.println(coefcorrClassic[0]);
             System.out.println(coefcorrFft[0]);
         }
+    }
 }
