@@ -4,7 +4,7 @@ import by.bsuir.dsip.bean.Complex;
 
 public class Walsh {
 
-    public Complex[] DWT(double[][] walsh, Complex[] x){
+    public static Complex[] DWT(double[][] walsh, Complex[] x) {
 
         int N = x.length;
         Complex[] result = new Complex[N];
@@ -13,7 +13,7 @@ public class Walsh {
             for(int j = 0; j < N; j++){
                 value.plus(x[j].times(new Complex(walsh[i][j], 0)));
             }
-            result[i] = new Complex(value.re(), value.im());
+            result[i] = value;
         }
 
         return result;
@@ -26,6 +26,7 @@ public class Walsh {
         for(int i = 0; i < N; i++){
             result[i].scale(1/N);
         }
+
         return result;
     }
 }
