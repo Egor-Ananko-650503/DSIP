@@ -11,7 +11,7 @@ public class Walsh {
         for(int i = 0; i < N; i++){
             Complex value = new Complex(0, 0);
             for(int j = 0; j < N; j++){
-                value.plus(x[j].times(new Complex(walsh[i][j], 0));
+                value.plus(x[j].times(new Complex(walsh[i][j], 0)));
             }
             result[i] = new Complex(value.re(), value.im());
         }
@@ -19,4 +19,13 @@ public class Walsh {
         return result;
     }
 
+    public Complex[] IDWT(double[][] walsh, Complex[] x){
+
+        Complex[] result = DWT(walsh, x);
+        int N = result.length;
+        for(int i = 0; i < N; i++){
+            result[i].scale(1/N);
+        }
+        return result;
+    }
 }
